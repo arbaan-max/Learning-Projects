@@ -1,6 +1,9 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+
 import 'package:auth/pages/home_page.dart';
 import 'package:auth/pages/login_register_page.dart';
-import 'package:flutter/material.dart';
 
 import 'auth.dart';
 
@@ -26,3 +29,5 @@ class _VerifierState extends State<Verifier> {
     );
   }
 }
+
+

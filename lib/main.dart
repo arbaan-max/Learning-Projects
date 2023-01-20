@@ -1,3 +1,4 @@
+import 'package:auth/business_logic/cubit/student_cubit.dart';
 import 'package:auth/verifier.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +21,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
       ),
       home:  BlocProvider(
-        create: BlocProvider.of<StudentCubit>(context),
-        child: Verifier(),
+        create: (BuildContext context) => StudentCubit(),
+        child: const Verifier(),
       ),
     );
   }
