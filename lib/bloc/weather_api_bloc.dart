@@ -10,11 +10,11 @@ part 'weather_api_state.dart';
 
 class WeatherApiBloc extends Bloc<WeatherApiEvent, WeatherApiState> {
   WeatherApiBloc() : super(WeatherApiInitial()) {
-    final Api _api = Api();
-    on<WeatherApiEvent>((event, emit) async {
+    final Api api = Api();
+    on<GetList>((event, emit) async {
       try {
         emit(WeatherApiLoading());
-        final weatherList = await _api.getapi();
+        final weatherList = await api.getapi();
         emit(WeatherApiLoaded(weatherList));
       } on NetworkError {
         emit(const WeatherApiFailed('There is an Error'));

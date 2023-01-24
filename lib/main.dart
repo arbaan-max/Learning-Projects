@@ -1,3 +1,4 @@
+import 'package:auth/bloc/weather_api_bloc.dart';
 import 'package:auth/services/weather_api.dart';
 import 'package:auth/views/weather_list.dart';
 import 'package:flutter/material.dart';
@@ -12,12 +13,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.red,
+    return BlocProvider(
+      create: (_) => WeatherApiBloc(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.red,
+        ),
+        home: const WeatherList()
       ),
-      home: const WeatherList(),
     );
   }
 }
