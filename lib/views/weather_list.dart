@@ -15,7 +15,6 @@ class _WeatherListState extends State<WeatherList> {
 
   @override
   Widget build(BuildContext context) {
-    print(BlocProvider.of<WeatherApiBloc>(context).state);
     return Scaffold(
       appBar: AppBar(title: const Text('Weather List')),
       body: RefreshIndicator(
