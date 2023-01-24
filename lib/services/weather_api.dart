@@ -14,8 +14,11 @@ Future<List<ApiModel>> getapi() async{
   
   final response = await client.get(uri);
   if (response.statusCode == 200) {
+    client.close();
     return welcomeFromJson(response.body); 
   } else {
+    client.close();
+
     throw Exception('Failed to load stations');
   }
 }

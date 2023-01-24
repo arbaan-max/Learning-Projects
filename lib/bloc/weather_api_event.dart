@@ -9,3 +9,10 @@ abstract class WeatherApiEvent extends Equatable{
 }
 
 class GetList extends  WeatherApiEvent{}
+
+class RefresList extends WeatherApiEvent {
+  int pageNumber;
+  RefresList({
+    required this.pageNumber,
+  });
+}

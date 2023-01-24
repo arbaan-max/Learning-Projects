@@ -20,5 +20,14 @@ class WeatherApiBloc extends Bloc<WeatherApiEvent, WeatherApiState> {
         emit(const WeatherApiFailed('There is an Error'));
       }
     });
+    on<RefresList>((event, emit) {
+      switch (event.pageNumber) {
+        case 1:
+          
+          break;
+        default:
+      }
+      return null;
+    }); 
   }
 }
