@@ -5,7 +5,10 @@ import 'package:http/http.dart' as http;
 import 'package:auth/constant/uri_constant.dart';
 import 'package:auth/model/weather_output.dart';
 
-Future<List<Welcome>> getapi() async{
+
+class Api{
+
+Future<List<ApiModel>> getapi() async{
   Uri uri = Uri.parse(ApiUrl.wheatherApi);
   final client = http.Client();
   
@@ -15,5 +18,5 @@ Future<List<Welcome>> getapi() async{
   } else {
     throw Exception('Failed to load stations');
   }
-
+}
 }
