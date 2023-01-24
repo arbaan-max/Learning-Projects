@@ -1,0 +1,14 @@
+
+
+
+class ApiRepository {
+ 
+  final _api = Api();
+  Future<Welcome> fetchList(){
+    return _api.getapi();
+  }
+
+}
+
+class NetworkError extends Error {}
+

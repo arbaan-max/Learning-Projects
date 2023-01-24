@@ -1,15 +1,11 @@
-// To parse this JSON data, do
-//
-//     final welcome = welcomeFromJson(jsonString);
-
 import 'dart:convert';
 
-List<Welcome> welcomeFromJson(String str) => List<Welcome>.from(json.decode(str).map((x) => Welcome.fromJson(x)));
+List<ApiModel> welcomeFromJson(String str) => List<ApiModel>.from(json.decode(str).map((x) => ApiModel.fromJson(x)));
 
-String welcomeToJson(List<Welcome> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String welcomeToJson(List<ApiModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class Welcome {
-    Welcome({
+class ApiModel {
+    ApiModel({
         required this.userId,
         required this.id,
         required this.title,
@@ -21,7 +17,7 @@ class Welcome {
     String title;
     String body;
 
-    factory Welcome.fromJson(Map<String, dynamic> json) => Welcome(
+    factory ApiModel.fromJson(Map<String, dynamic> json) => ApiModel(
         userId: json["userId"],
         id: json["id"],
         title: json["title"],
