@@ -1,5 +1,5 @@
 import 'package:auth/services/weather_api.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:auth/views/weather_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: const Homepage(),
+      home: const WeatherList(),
     );
   }
 }
