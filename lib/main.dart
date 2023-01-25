@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Firebase Push Notifications',
+      title: 'Firebase Push Notification',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
