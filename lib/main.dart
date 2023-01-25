@@ -39,16 +39,17 @@ class HomePage extends StatelessWidget {
               style: Theme.of(context).textTheme.headline2,
             ),
             Text(
-              DateFormat('HH:mm:ss ')
+              DateFormat('hh:mm:ss ')
                   .format(Provider.of<TimeProvider>(context).get()),
               style: Theme.of(context).textTheme.headline2,
             ),
+            const SizedBox(height: 40,),
             ElevatedButton(
               onPressed: () {
                 Provider.of<TimeProvider>(context,listen: false).updateTime();
               },
               child: const Text('update'),
-            )
+            ),
           ],
         ),
       ),
