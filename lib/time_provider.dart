@@ -2,8 +2,9 @@ import 'package:flutter/cupertino.dart';
 
 class TimeProvider extends ChangeNotifier {
   DateTime _now = DateTime.now();
+  Duration _timer =Duration();
 
-  DateTime get() {
+  DateTime get currentTime {
     return _now;
   }
 
@@ -15,5 +16,11 @@ class TimeProvider extends ChangeNotifier {
     });
     }
     
+  }
+
+  void setTime(Duration time){
+    _timer=time;
+    notifyListeners();
+
   }
 }
