@@ -1,28 +1,56 @@
-import 'package:auth/business_logic/cubit/student_cubit.dart';
-import 'package:auth/verifier.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:auth/time_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(const MyApp());
+void main() {
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.red,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<TimeProvider>(
+            create: (context) => TimeProvider()),
+      ],
+      child: const MaterialApp(
+        home: HomePage(),
       ),
-      home:  BlocProvider(
-        create: (BuildContext context) => StudentCubit(),
-        child: const Verifier(),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Current Time Is",
+              style: Theme.of(context).textTheme.headline2,
+            ),
+            Text(
+              DateFormat('HH:mm:ss ')
+                  .format(Provider.of<TimeProvider>(context).get()),
+              style: Theme.of(context).textTheme.headline2,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Provider.of<TimeProvider>(context,listen: false).updateTime();
+              },
+              child: const Text('update'),
+            )
+          ],
+        ),
       ),
     );
   }
