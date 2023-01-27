@@ -1,139 +1,150 @@
-import 'package:auth/time_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
+// This code is distributed under the MIT License.
+// Copyright (c) 2019 Remi Rousselet.
+// You can find the original at https://github.com/rrousselGit/provider.
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+// This is a reimplementation of the default Flutter application
+// using provider + [ChangeNotifier].
 void main() {
-  runApp(const MyApp());
+  runApp(
+    // Providers are above [MyApp] instead of inside it, so that
+    // tests can use [MyApp] while mocking the providers
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => Counter()),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+
+
+// Mix-in [DiagnosticableTreeMixin] to have access to
+// [debugFillProperties] for the devtool ignore: prefer_mixin
+class Counter with ChangeNotifier, DiagnosticableTreeMixin {
+  int _count = 0;
+  DateTime _now = DateTime.now();
+   Duration _timer =const Duration();
+
+  int get count => _count;
+  Duration get time => _timer;
+  
+  void setTime(Duration time){
+    _timer=time;
+    notifyListeners();
+  }
+  
+    Future<void> updateTime() async{
+    while (true) {
+      await Future.delayed(const Duration(seconds: 1), () {
+      _now = DateTime.now();
+        notifyListeners();
+        return _now;
+      
+    });}
+    }  
+  
+   void startTimer() async{
+    while (_timer.inMinutes==0 && _timer.inSeconds==0) {
+      await Future.delayed(const Duration(seconds: 1), () {
+      _timer = Duration(minutes:_timer.inMinutes,seconds: _timer.inSeconds );        
+      notifyListeners();
+    });
+      
+    }
+    
+  }
+  
+  void increment() {
+    _count++;
+    notifyListeners();
+  }
+
+  // Makes `Counter` readable inside the devtools by listing all
+  // of its properties.
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IntProperty('count', count));
+  }
+}
+
+
+
+
+class Count extends StatelessWidget {
+  const Count({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      // Calls `context.watch` to make [Count] rebuild when
+      // [Counter] changes.
+      '${context.watch<Counter>().time}',
+      key: const Key('counterState'),
+      style: Theme.of(context).textTheme.headlineMedium,
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<TimeProvider>(
-            create: (context) => TimeProvider()),
-      ],
-      child: const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: HomePage(),
-      ),
+    return const MaterialApp(
+      home: MyHomePage(),
     );
   }
 }
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  void initState() {
-    Provider.of<TimeProvider>(context, listen: false).updateTime();
-    super.initState();
-  }
-
-  final StopWatchTimer _stopWatchTimer = StopWatchTimer();
-  final _isHour = true;
-  final _scrollcontroller = ScrollController();
-
-  @override
-  void dispose() {
-    super.dispose();
-    _scrollcontroller.dispose();
-    _stopWatchTimer.dispose();
-  }
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle.dark.copyWith(
-        statusBarColor: Colors.transparent,
-      ),
-    );
+    TextEditingController _controllerHour = TextEditingController();
+    TextEditingController _controllerSeconds =TextEditingController();
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Provider example'),
+      ),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              "Current Time Is",
-              style: Theme.of(context).textTheme.headline2,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children:  <Widget>[
+            const Text('You have pushed the button this many times:'),
+            const Count(),
+      
+              TextField(
+            controller: _controllerHour,
             ),
-            Text(
-              DateFormat('hh:mm:ss ')
-                  .format(Provider.of<TimeProvider>(context).currentTime),
-              style: Theme.of(context).textTheme.headline2,
+            TextField(
+            controller: _controllerSeconds,
             ),
-            const SizedBox(
-              height: 40,
-            ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Provider.of<TimeProvider>(context, listen: false).updateTime();
-            //   },
-            //   child: const Text('update'),
-            // ),
-            StreamBuilder<int>(
-              stream: _stopWatchTimer.rawTime,
-              initialData: _stopWatchTimer.rawTime.value,
-              builder: (context, snapshot) {
-                final value = snapshot.data ;
-                final displayTime =
-                    StopWatchTimer.getDisplayTime(value!, hours: _isHour );
-                return Text(displayTime , style: const TextStyle(fontSize: 30));
-              },
-            ),
-            Row(
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      _stopWatchTimer.onStartTimer();
-                    },
-                    child: const Text('start')),
-                const SizedBox(width: 40),
-                ElevatedButton(
-                    onPressed: () {
-                      _stopWatchTimer.onStopTimer();
-                    },
-                    child: const Text('Stop'))
-              ],
-            ),
-            const SizedBox(height: 40),
-            StreamBuilder<List<StopWatchRecord>>(
-              stream: _stopWatchTimer.records,
-              initialData: _stopWatchTimer.records.value,
-              builder: (context, snapshot) {
-               final value =snapshot.data;
-               if (value==null) {
-                   return Container();
-               }
-               return ListView.builder(
-                controller: _scrollcontroller,
-                itemBuilder: (context, index) {
-                  final data=value[index];
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('${index+1}--${data.displayTime}'),
-                      )
-                    ],
-                  );
-
-               },);
-            },)
+        ElevatedButton(
+        onPressed: (){
+          context.read<Counter>().startTimer();
+        },
+          child: Text('Press me '),
+        ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        key: const Key('increment_floatingActionButton'),
+        onPressed: () => context.read<Counter>().setTime
+        (Duration(minutes: int.parse(_controllerHour.text),
+                  seconds: int.parse(_controllerSeconds.text))),
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
+
+
