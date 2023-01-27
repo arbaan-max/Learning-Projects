@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'dart:developer';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -38,22 +38,18 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     Provider.of<TimeProvider>(context, listen: false).updateTime();
-
     super.initState();
   }
 
-  TextEditingController timeinput = TextEditingController();
+  final StopWatchTimer _stopWatchTimer = StopWatchTimer();
+  final _isHour = true;
+  final _scrollcontroller = ScrollController();
 
-  String? _selectedTime;  
-
-    Future<void> _show() async {
-    final TimeOfDay? result =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
-    if (result != null) {
-      setState(() {
-        _selectedTime = result.format(context);
-      });
-    }
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollcontroller.dispose();
+    _stopWatchTimer.dispose();
   }
 
   @override
@@ -86,16 +82,58 @@ class _HomePageState extends State<HomePage> {
             //   },
             //   child: const Text('update'),
             // ),
-              Text(
-          _selectedTime != null ? _selectedTime! : 'No time selected!',
-          style: const TextStyle(fontSize: 30),
-        ),
-        
+            StreamBuilder<int>(
+              stream: _stopWatchTimer.rawTime,
+              initialData: _stopWatchTimer.rawTime.value,
+              builder: (context, snapshot) {
+                final value = snapshot.data ;
+                final displayTime =
+                    StopWatchTimer.getDisplayTime(value!, hours: _isHour );
+                return Text(displayTime , style: const TextStyle(fontSize: 30));
+              },
+            ),
+            Row(
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      _stopWatchTimer.onStartTimer();
+                    },
+                    child: const Text('start')),
+                const SizedBox(width: 40),
+                ElevatedButton(
+                    onPressed: () {
+                      _stopWatchTimer.onStopTimer();
+                    },
+                    child: const Text('Stop'))
+              ],
+            ),
+            const SizedBox(height: 40),
+            StreamBuilder<List<StopWatchRecord>>(
+              stream: _stopWatchTimer.records,
+              initialData: _stopWatchTimer.records.value,
+              builder: (context, snapshot) {
+               final value =snapshot.data;
+               if (value==null) {
+                   return Container();
+               }
+               return ListView.builder(
+                controller: _scrollcontroller,
+                itemBuilder: (context, index) {
+                  final data=value[index];
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('${index+1}--${data.displayTime}'),
+                      )
+                    ],
+                  );
+
+               },);
+            },)
           ],
         ),
       ),
-      floatingActionButton: ElevatedButton(
-          onPressed: _show, child: const Text('Show Time Picker')),
     );
   }
 }
